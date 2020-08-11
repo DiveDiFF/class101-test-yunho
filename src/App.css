@@ -8,7 +8,8 @@ html {
 }
 a {
   background-color: transparent;
-  text-decoration: none!important;
+  text-decoration: none;
+  color: black;
 }
 
 a:active,

@@ -1,11 +1,11 @@
 import React from 'react';
 import {Route} from 'react-router-dom';
 
-import {ThemeProvider} from '@material-ui/core/styles';
 import Home from './pages/home';
 import Products from './pages/products';
 import Cart from './pages/cart';
 import Header from './pages/header';
+import './App.css';
 
 
 class App extends React.Component {
@@ -15,7 +15,7 @@ class App extends React.Component {
         <Header/>
         <Route exact path="/" component={Home} title="클래스101"/>
         <Route path="/products" component={Products} title="상품 목록" />
-        <Route path="/carts" component={Cart} title="장바구니" />
+        <Route path="/cart" component={Cart} title="장바구니" />
       </div>
     );
   }
