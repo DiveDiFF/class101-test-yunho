@@ -9,22 +9,23 @@ import {Paper, Typography, IconButton} from '@material-ui/core';
 const styles = theme => ({
   root: {
     padding: '10px 30px',
-    position: 'static',
+    position: 'fixed',
+    top: '0',
+    left: '0',
+    right: '0',
+    zIndex: '100',
   },
   flex: {
     alignItems: 'center',
     height: '58px',
   },
-  icon: {
-    color: "rgba(255, 255, 255, 0.54)"
-  }
 });
 
 class Header extends React.Component {
   render() {
     const {classes} = this.props
     return(
-      <Paper className={classes.root} elevation={0} color="black">
+      <Paper className={classes.root} elevation={0}>
         <FlexRow>
           <Link to="/">
             <Typography component="h1" variant="h5">CLASS101</Typography>
