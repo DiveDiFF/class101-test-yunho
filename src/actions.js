@@ -2,7 +2,7 @@ import {productItems} from './datas/productItems';
 
 const fetchData = async ({pagination}) => {
   console.log(pagination);
-
+  productItems.sort((x,y) => x.score - y.score)
   return await getData({pagination});
 }
 
