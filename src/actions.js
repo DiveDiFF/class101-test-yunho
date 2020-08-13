@@ -13,7 +13,7 @@ const fetchData = async (path, option = {}) => {
     }
   } else {
     console.log('[FETCH GET COUPONS]');
-    return getCouponsData();
+    return await getCouponsData();
   }
 }
 
@@ -21,15 +21,13 @@ const getProductsData = (pagination) => {
   console.log('[PAGE]', pagination)
   const pageIndex = (Number(pagination) - 1) * 5;
   const totalPage = Math.ceil(productItems.length / 5);
-  if(pagination > totalPage) {
-    throw 'END';
-  }
+  productItems.push({});
   return {products: productItems.slice(pageIndex ,pageIndex + 5), meta: {totalPage}};
 }
 
 const getCouponsData = () => {
   console.log('[FUNC GET COUPONS]');
-  return null
+  return Coupons;
 }
 
 export {fetchData}

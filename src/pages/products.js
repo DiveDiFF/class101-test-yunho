@@ -12,15 +12,22 @@ const styles = theme => ({
   root: {
     marginTop: '68px',
     height: '90vh',
-    flexGrow: 1,
   },
   cardContainer: {
-    textAlign: 'center',
+    textAlign: '-webkit-center',
     padding: '10px',
     margin: '0 auto',
   },
   card: {
+    textAlign: 'center',
     padding: '5px',
+    flex: '1 0 20%',
+    maxWidth: '20%',
+    '@media (max-width:750px)': {
+      flex: '1 0 100%',
+      maxWidth: '100%',
+      display: 'inline-block',
+    },
   },
 });
 class Products extends React.Component {
@@ -34,7 +41,6 @@ class Products extends React.Component {
   render() {
     const {classes} = this.props;
     const {products, cart, pageEnd} = this.state;
-    console.log(cart.length);
 
     if (!products || products.length === 0) return null
     return(
@@ -42,14 +48,14 @@ class Products extends React.Component {
         <Title title="상품목록" />
         <div className={classes.cardContainer}>
           <Grid container spacing={3} justify="space-around">
-            {products.length > 0 && products.map((product) =>
-              <Grid item xs={12} sm={2} className={classes.card} key ={product.id}>
+            {products.length > 0 && products.map((product , index) =>
+              <Grid item className={classes.card} key ={product.id || index + Math.random()}>
                 <ProductCard
                   onChange={this.handleChangeCartItem}
                   id={product.id}
                   title={product.title}
                   coverImage={product.coverImage}
-                  price={`월 ${product.price.toLocaleString()}원`}
+                  price={product.price}
                   fullCart={cart.length === 3}
                 />
               </Grid>
@@ -91,7 +97,6 @@ class Products extends React.Component {
 
   handleClickMoreProducts = () => {
     const pagination = this.state.pagination + 1
-    console.log('');
     fetchData(`/products`, {method: 'GET', pagination})
       .then(response => {
         console.log('[CLICK MORE BUTTON FETCH]', response);

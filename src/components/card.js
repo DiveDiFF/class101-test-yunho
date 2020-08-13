@@ -26,6 +26,10 @@ class ProductCard extends React.Component {
   render() {
     const {classes, title, coverImage, price} = this.props;
     const {selected} = this.state;
+    if(!this.props.id) {
+      return null
+    }
+
     return (
       <Card className={classes.root}>
         <CardActionArea disabled>
@@ -39,7 +43,7 @@ class ProductCard extends React.Component {
               {title}
             </Typography>
             <Typography variant="caption" color="textSecondary" component="p">
-              {price}
+              {`월 ${price.toLocaleString()}원`}
             </Typography>
           </CardContent>
         </CardActionArea>
