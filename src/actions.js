@@ -1,15 +1,35 @@
 import {productItems} from './datas/productItems';
+import {Coupons} from './datas/coupons';
 
-const fetchData = async ({pagination}) => {
-  console.log(pagination);
-  productItems.sort((x,y) => x.score - y.score)
-  return await getData({pagination});
+const fetchData = async (path, option = {}) => {
+  console.log(path, option);
+  if (path === `/products`) {
+    productItems.sort((x,y) => y.score - x.score)
+    if (option.method === 'GET') {
+      console.log('[FETCH GET PRODUCTS]');
+      return await getProductsData(option.pagination);
+    } else if (option.method === 'POST') {
+      console.log('[FETCH POST PRODUCTS]', option);
+    }
+  } else {
+    console.log('[FETCH GET COUPONS]');
+    return getCouponsData();
+  }
 }
 
-const getData = ({pagination}) => {
-  console.log(pagination)
+const getProductsData = (pagination) => {
+  console.log('[PAGE]', pagination)
   const pageIndex = (Number(pagination) - 1) * 5;
-  return productItems.slice(pageIndex ,pageIndex + 5);
+  const totalPage = Math.ceil(productItems.length / 5);
+  if(pagination > totalPage) {
+    throw 'END';
+  }
+  return {products: productItems.slice(pageIndex ,pageIndex + 5), meta: {totalPage}};
+}
+
+const getCouponsData = () => {
+  console.log('[FUNC GET COUPONS]');
+  return null
 }
 
 export {fetchData}

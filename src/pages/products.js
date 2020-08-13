@@ -27,14 +27,16 @@ class Products extends React.Component {
   state = {
     products: [],
     cart: [],
+    pagination: 1,
+    pageEnd: false,
   }
 
   render() {
     const {classes} = this.props;
-    const {products, cart} = this.state;
+    const {products, cart, pageEnd} = this.state;
     console.log(cart.length);
 
-    if (products.length == 0) return null
+    if (!products || products.length === 0) return null
     return(
       <Paper className={classes.root} elevation={0}>
         <Title title="상품목록" />
@@ -48,24 +50,28 @@ class Products extends React.Component {
                   title={product.title}
                   coverImage={product.coverImage}
                   price={`월 ${product.price.toLocaleString()}원`}
-                  fullCart={cart.length == 3}
+                  fullCart={cart.length === 3}
                 />
               </Grid>
             )}
           </Grid>
-          <Button fullWidth variant="contained" color="primary">더보기</Button>
         </div>
+        {!pageEnd &&
+          <Button size="large" fullWidth variant="contained" color="primary"
+            onClick={this.handleClickMoreProducts}>더보기</Button>
+        }
       </Paper>
     );
   }
 
   componentDidMount() {
-    console.log(this.state);
-    fetchData({pagination: 1})
-      .then(products => {
-        console.log('[Products]', products);
-        this.setState({...this.state, products});
-      });
+    const {pagination} = this.state;
+    console.log('[COMPONENTDIDMOUNT]', pagination)
+    fetchData(`/products`, {method: 'GET', pagination})
+      .then(response => {
+        console.log('[Products]', response);
+        this.setState({...this.state, products: response.products});
+      }).catch(error => window.alert('[서버 에러] 상품 정보를 불러올 수 없습니다.'));
   }
 
   handleChangeCartItem = ({type, id}) => {
@@ -73,13 +79,26 @@ class Products extends React.Component {
     const {products} = this.state;
     let cart = [];
 
-    if (type == 'ADD') {
-      const selectProduct = products.find(product => product.id == id);
+    if (type === 'ADD') {
+      const selectProduct = products.find(product => product.id === id);
       cart = [...this.state.cart, selectProduct];
     } else {
-      cart = this.state.cart.filter(product => product.id != id);
+      cart = this.state.cart.filter(product => product.id !== id);
     }
-    this.setState({...this.state, cart});
+    fetchData(`/products`, {method: 'POST', body: cart})
+      .then(() => this.setState({...this.state, cart}));
+  }
+
+  handleClickMoreProducts = () => {
+    const pagination = this.state.pagination + 1
+    console.log('');
+    fetchData(`/products`, {method: 'GET', pagination})
+      .then(response => {
+        console.log('[CLICK MORE BUTTON FETCH]', response);
+        const products = [...this.state.products, ...response.products];
+        const pageEnd = pagination === response.meta.totalPage
+        this.setState({...this.state, pagination, products, pageEnd});
+      }).catch(error => window.alert(`[오류], ${error}`));
   }
 }
 

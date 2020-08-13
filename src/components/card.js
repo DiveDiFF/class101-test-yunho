@@ -26,10 +26,9 @@ class ProductCard extends React.Component {
   render() {
     const {classes, title, coverImage, price} = this.props;
     const {selected} = this.state;
-    console.log(this.props);
     return (
       <Card className={classes.root}>
-        <CardActionArea>
+        <CardActionArea disabled>
           <CardMedia
             className={classes.img}
             image={coverImage}
@@ -59,13 +58,12 @@ class ProductCard extends React.Component {
   }
 
   handleClickToCart = (type) => {
-    console.log(this.props.fullCart)
-    if(this.props.fullCart && type == 'ADD') {
+    if(this.props.fullCart && type === 'ADD') {
       window.alert('장바구니에는 최대 3개의 상품만 담을 수 있습니다.');
       return;
     }
     const {id} = this.props
-    const selected = type == 'ADD'
+    const selected = type === 'ADD'
     this.setState({selected}, this.props.onChange({id, type}));
   }
 }
