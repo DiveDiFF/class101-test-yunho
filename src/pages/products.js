@@ -30,22 +30,25 @@ class Products extends React.Component {
   }
 
   render() {
-    const {classes} = this.props
-    const {products} = this.state
+    const {classes} = this.props;
+    const {products, cart} = this.state;
+    console.log(cart.length);
+
+    if (products.length == 0) return null
     return(
       <Paper className={classes.root} elevation={0}>
         <Title title="상품목록" />
         <div className={classes.cardContainer}>
           <Grid container spacing={3} justify="space-around">
             {products.length > 0 && products.map((product) =>
-              <Grid item xs={12} sm={2} className={classes.card}>
+              <Grid item xs={12} sm={2} className={classes.card} key ={product.id}>
                 <ProductCard
-                  key={product.id}
                   onChange={this.handleChangeCartItem}
                   id={product.id}
                   title={product.title}
                   coverImage={product.coverImage}
                   price={`월 ${product.price.toLocaleString()}원`}
+                  fullCart={cart.length == 3}
                 />
               </Grid>
             )}
@@ -66,10 +69,6 @@ class Products extends React.Component {
   }
 
   handleChangeCartItem = ({type, id}) => {
-    if(this.state.cart.length >= 3) {
-      window.alert('장바구니에는 최대 3개의 상품만 담을 수 있습니다.');
-      return false;
-    }
     console.log('!!!',type, id);
     const {products} = this.state;
     let cart = [];
