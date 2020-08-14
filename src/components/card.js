@@ -1,7 +1,10 @@
 import React from 'react';
 
 import {withStyles} from '@material-ui/core/styles';
-import {Card, CardActionArea, CardMedia, CardContent, CardActions, Typography, Button} from '@material-ui/core';
+import {
+  Card, CardActionArea, CardMedia, CardContent,
+  CardActions, Typography, Button, Divider,
+} from '@material-ui/core';
 
 
 const styles = theme => ({
@@ -19,15 +22,11 @@ const styles = theme => ({
 });
 
 class ProductCard extends React.Component {
-  state = {
-    selected: false,
-  }
 
   render() {
-    const {classes, title, coverImage, price} = this.props;
-    const {selected} = this.state;
+    const {classes, title, coverImage, price, selected} = this.props;
     if(!this.props.id) {
-      return null
+      return null;
     }
 
     return (
@@ -47,6 +46,7 @@ class ProductCard extends React.Component {
             </Typography>
           </CardContent>
         </CardActionArea>
+        <Divider variant="middle" />
         <CardActions>
           { !selected ?
             <Button fullWidth size="small" color="primary" onClick={() => this.handleClickToCart('ADD')}>
@@ -64,11 +64,10 @@ class ProductCard extends React.Component {
   handleClickToCart = (type) => {
     if(this.props.fullCart && type === 'ADD') {
       window.alert('장바구니에는 최대 3개의 상품만 담을 수 있습니다.');
-      return;
+      return null;
     }
-    const {id} = this.props
-    const selected = type === 'ADD'
-    this.setState({selected}, this.props.onChange({id, type}));
+    const {id} = this.props;
+    this.props.onChange({id, type});
   }
 }
 

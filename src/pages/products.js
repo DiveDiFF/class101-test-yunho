@@ -42,6 +42,13 @@ class Products extends React.Component {
     const {classes} = this.props;
     const {products, cart, pageEnd} = this.state;
 
+    const checkSelected = (id) => {
+      const selected = cart.some(item => {
+        return item.id === id
+      });
+      return selected;
+    }
+
     if (!products || products.length === 0) return null
     return(
       <Paper className={classes.root} elevation={0}>
@@ -57,6 +64,7 @@ class Products extends React.Component {
                   coverImage={product.coverImage}
                   price={product.price}
                   fullCart={cart.length === 3}
+                  selected={checkSelected(product.id)}
                 />
               </Grid>
             )}
@@ -72,12 +80,13 @@ class Products extends React.Component {
 
   componentDidMount() {
     const {pagination} = this.state;
-    console.log('[COMPONENTDIDMOUNT]', pagination)
     fetchData(`/products`, {method: 'GET', pagination})
       .then(response => {
-        console.log('[Products]', response);
-        this.setState({...this.state, products: response.products});
-      }).catch(error => window.alert('[서버 에러] 상품 정보를 불러올 수 없습니다.'));
+        fetchData(`/cart`, {method: 'GET'})
+          .then(cart => {
+            this.setState({...this.state, products: response.products, cart});
+          })
+      }).catch(error => window.alert(`[오류] 상품 정보를 불러올 수 없습니다. ${error}`));
   }
 
   handleChangeCartItem = ({type, id}) => {
@@ -91,8 +100,9 @@ class Products extends React.Component {
     } else {
       cart = this.state.cart.filter(product => product.id !== id);
     }
-    fetchData(`/products`, {method: 'POST', body: cart})
-      .then(() => this.setState({...this.state, cart}));
+    fetchData(`/cart`, {method: 'POST', body: cart})
+      .then(() => this.setState({...this.state, cart}))
+      .catch(error => window.alert(`[오류], ${error}`));
   }
 
   handleClickMoreProducts = () => {
