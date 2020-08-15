@@ -4,7 +4,7 @@ import {FlexRow} from '../components/flex';
 import {MaterialIcon} from '../components/widgets';
 
 import {withStyles} from "@material-ui/core/styles";
-import {Paper, Typography, IconButton} from '@material-ui/core';
+import {Container, Typography, IconButton} from '@material-ui/core';
 
 const styles = theme => ({
   root: {
@@ -25,7 +25,7 @@ class Header extends React.Component {
   render() {
     const {classes} = this.props
     return(
-      <Paper className={classes.root} elevation={0}>
+      <Container className={classes.root} elevation={0}>
         <FlexRow>
           <Link to="/">
             <Typography component="h1" variant="h5">CLASS101</Typography>
@@ -36,7 +36,7 @@ class Header extends React.Component {
             </IconButton>
           </Link>
         </FlexRow>
-      </Paper>
+      </Container>
     );
   }
 }

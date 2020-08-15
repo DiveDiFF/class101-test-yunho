@@ -42,7 +42,7 @@ class ProductCard extends React.Component {
               {title}
             </Typography>
             <Typography variant="caption" color="textSecondary" component="p">
-              {`월 ${price.toLocaleString()}원`}
+              {`${price.toLocaleString()}원`}
             </Typography>
           </CardContent>
         </CardActionArea>

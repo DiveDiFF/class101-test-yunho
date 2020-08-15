@@ -5,7 +5,7 @@ import {Title} from '../components/title';
 import ProductCard from '../components/card';
 
 import {withStyles} from '@material-ui/core/styles';
-import {Paper, Button, Grid} from '@material-ui/core';
+import {Paper, Button, Grid, Container} from '@material-ui/core';
 
 
 const styles = theme => ({
@@ -53,7 +53,7 @@ class Products extends React.Component {
     return(
       <Paper className={classes.root} elevation={0}>
         <Title title="상품목록" />
-        <div className={classes.cardContainer}>
+        <Container className={classes.cardContainer}>
           <Grid container spacing={3} justify="space-around">
             {products.length > 0 && products.map((product , index) =>
               <Grid item className={classes.card} key ={product.id || index + Math.random()}>
@@ -69,7 +69,7 @@ class Products extends React.Component {
               </Grid>
             )}
           </Grid>
-        </div>
+        </Container>
         {!pageEnd &&
           <Button size="large" fullWidth variant="contained" color="primary"
             onClick={this.handleClickMoreProducts}>더보기</Button>
