@@ -58,8 +58,13 @@ class Cart extends React.Component {
       <Paper className={classes.root} elevation={0}>
         <Title title="장바구니" />
         <Container>
-          <CartItem cart={cart} onChange={this.handleChange} classes={classes} />
-          <PriceSummary classes={classes} subTotalPrice={subTotalPrice}/>
+          {!cart || cart.length === 0 ?
+            <EmptyCart classes={classes}/> :
+            <div>
+              <CartItem cart={cart} onChange={this.handleChange} classes={classes} />
+              <PriceSummary classes={classes} subTotalPrice={subTotalPrice}/>
+            </div>
+          }
         </Container>
       </Paper>
     );
@@ -80,10 +85,9 @@ class Cart extends React.Component {
 
   handleChange = (cart) => {
     console.log(cart);
-    const subTotalPrice = this.priceCalculator(this.state.cart);
+    const subTotalPrice = this.priceCalculator(cart);
     console.log(subTotalPrice);
     this.setState({...this.state, cart, subTotalPrice});
-
   }
 
   priceCalculator = (cart) => {
@@ -97,18 +101,19 @@ class Cart extends React.Component {
   }
 }
 
+const EmptyCart = ({classes}) => {
+  return (
+    <div className={classes.emptyCart}>
+      <MaterialIcon icon="store" style={{fontSize: '100px'}}/>
+      <Typography variant="h6" component="h4" gutterBottom>장바구니에 상품이 없습니다.</Typography>
+      <Link to="/products">상품 목록 보기</Link>
+    </div>
+  );
+}
+
 class CartItem extends React.Component {
   render() {
     const {classes, cart} = this.props;
-    if(!cart || cart.length === 0) {
-      return (
-        <div className={classes.emptyCart}>
-          <MaterialIcon icon="store" style={{fontSize: '100px'}}/>
-          <Typography variant="h6" component="h4" gutterBottom>장바구니에 상품이 없습니다.</Typography>
-          <Link to="/products">상품 목록 보기</Link>
-        </div>
-      );
-    }
 
     return(
       <List>
@@ -189,6 +194,7 @@ class PriceSummary extends React.Component {
   render() {
     const {classes, subTotalPrice} = this.props;
     const {discount} = this.state;
+
     return (
       <TableContainer>
         <Table>
