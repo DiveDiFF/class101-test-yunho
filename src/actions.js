@@ -32,6 +32,7 @@ const postCartData = (body) => {
 
 const getCartData = () => {
   const cart = JSON.parse(window.localStorage.getItem('cart'));
+  console.log('[GET]', cart)
   return cart || [];
 }
 

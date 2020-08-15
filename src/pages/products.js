@@ -23,7 +23,7 @@ const styles = theme => ({
     padding: '5px',
     flex: '1 0 20%',
     maxWidth: '20%',
-    '@media (max-width:750px)': {
+    '@media (max-width:800px)': {
       flex: '1 0 100%',
       maxWidth: '100%',
       display: 'inline-block',
