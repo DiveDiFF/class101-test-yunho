@@ -19,7 +19,6 @@ const fetchData = async (path, option = {}) => {
 }
 
 const getProductsData = (pagination) => {
-  console.log('[PAGE]', pagination)
   const pageIndex = (Number(pagination) - 1) * 5;
   const totalPage = Math.ceil(productItems.length / 5);
   productItems.push({});
@@ -32,12 +31,10 @@ const postCartData = (body) => {
 
 const getCartData = () => {
   const cart = JSON.parse(window.localStorage.getItem('cart'));
-  console.log('[GET]', cart)
   return cart || [];
 }
 
 const getCouponsData = () => {
-  console.log('[FUNC GET COUPONS]', coupons);
   return coupons;
 }
 

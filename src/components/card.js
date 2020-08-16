@@ -71,5 +71,4 @@ class ProductCard extends React.Component {
   }
 }
 
-
 export default withStyles(styles)(ProductCard);

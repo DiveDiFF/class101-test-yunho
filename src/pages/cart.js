@@ -13,20 +13,23 @@ import {
   Menu, MenuItem,
 } from '@material-ui/core';
 
+
 const priceCalculator = (cart) => {
   let subTotalPrice = 0;
   cart.map(item => {
     subTotalPrice = item.checked ? subTotalPrice + (item.price * item.quantity) : subTotalPrice;
-    console.log(subTotalPrice, item.price, item.quantity);
     return subTotalPrice;
   });
   return subTotalPrice;
 }
 
 const discountCalculator = (cart, coupon) => {
+  const cartWithCoupon = cart.filter(item => {
+    return item.availableCoupon !== false;
+  });
   let discount = 0;
   if (coupon.type === 'rate') {
-    discount = Math.floor(priceCalculator(cart) * (coupon.discountRate/100));
+    discount = Math.floor(priceCalculator(cartWithCoupon) * (coupon.discountRate/100));
   } else if (coupon.type === 'amount') {
     discount = coupon.discountAmount;
   }
@@ -41,7 +44,7 @@ const styles = theme => ({
   emptyCart: {
     marginTop: '100px',
     textAlign: 'center',
-    color: '#aaa'
+    color: '#aaa',
   },
   listItem: {
     '@media (max-width:800px)': {
@@ -69,7 +72,7 @@ const styles = theme => ({
     margin: '10px 0'
   },
   couponRoot: {
-    // minWidth: '50px'
+    minWidth: '40px',
   },
   couponText: {
     fontSize: '0.7em'
@@ -99,12 +102,15 @@ const styles = theme => ({
 class Cart extends React.Component {
   state = {
     cart: [],
+    coupons: [],
     subTotalPrice: 0,
+    discount: 0,
+    coupon: {},
   }
 
   render() {
     const {classes} = this.props;
-    const {cart, subTotalPrice} = this.state;
+    const {cart, coupons, subTotalPrice, discount} = this.state;
 
     return(
       <Paper className={classes.root} elevation={0}>
@@ -113,8 +119,14 @@ class Cart extends React.Component {
           {!cart || cart.length === 0 ?
             <EmptyCart classes={classes}/> :
             <div>
-              <CartItem cart={cart} onChange={this.handleChange} classes={classes} />
-              <PriceSummary classes={classes} subTotalPrice={subTotalPrice} cart={cart} />
+              <CartItem cart={cart} onChange={this.handleCartItemChange} classes={classes} />
+              <PriceSummary
+                classes={classes}
+                subTotalPrice={subTotalPrice}
+                discount={discount}
+                coupons={coupons}
+                onChange={this.handlePriceSummaryChange}
+              />
             </div>
           }
         </Container>
@@ -125,21 +137,28 @@ class Cart extends React.Component {
   componentDidMount() {
     fetchData(`/cart`, {method: 'GET'})
       .then(response => {
-        console.log(response)
-        const cart = response.map(item => {
-          return {...item, checked: true, quantity: 1};
-        });
-        console.log(cart, this.state)
-        const subTotalPrice = priceCalculator(cart);
-        this.setState({...this.state, cart, subTotalPrice});
+        fetchData(`/coupons`, {method: 'GET'})
+          .then(coupons => {
+            const cart = response.map(item => {
+              return {...item, checked: true, quantity: 1};
+            });
+            const subTotalPrice = priceCalculator(cart);
+            this.setState({...this.state, coupons, subTotalPrice, cart});
+          });
       }).catch(error => window.alert(`[오류], ${error}`));
   }
 
-  handleChange = (cart) => {
-    console.log(cart);
+  handleCartItemChange = (cart) => {
+    const {coupon} = this.state;
     const subTotalPrice = priceCalculator(cart);
-    console.log(subTotalPrice);
-    this.setState({...this.state, cart, subTotalPrice});
+    const discount = discountCalculator(cart, coupon);
+    this.setState({...this.state, cart, subTotalPrice, discount});
+  }
+
+  handlePriceSummaryChange = (coupon) => {
+    const {cart} = this.state;
+    const discount = discountCalculator(cart, coupon);
+    this.setState({...this.state, discount, coupon});
   }
 }
 
@@ -171,7 +190,7 @@ class CartItem extends React.Component {
             </ListItemIcon>
             <ListItemText className={classes.title}>
               <Typography variant="body2" gutterBottom>{item.title}</Typography>
-              <img src={item.coverImage} className={classes.img}/>
+              <img alt={item.title} src={item.coverImage} className={classes.img}/>
             </ListItemText>
             <ListItemText>
               <FormControl>
@@ -204,6 +223,7 @@ class CartItem extends React.Component {
       </List>
     );
   }
+
   handleToggleCheck = (id) => {
     const {cart} = this.props;
     cart.map(item => {
@@ -232,13 +252,8 @@ class CartItem extends React.Component {
 }
 
 class PriceSummary extends React.Component {
-  state = {
-    coupons: [],
-    discount: 0,
-  }
   render() {
-    const {classes, subTotalPrice} = this.props;
-    const {discount, coupons} = this.state;
+    const {classes, coupons, subTotalPrice, discount} = this.props;
 
     return (
       <TableContainer>
@@ -272,32 +287,15 @@ class PriceSummary extends React.Component {
     );
   }
 
-  componentDidMount() {
-    fetchData(`/coupons`, {method: 'GET'})
-      .then(coupons => {
-        console.log(coupons)
-        this.setState({...this.state, coupons});
-      }).catch(error => window.alert(`[오류], ${error}`));
-  }
-
-
-
   handleClickGoCheck = () => {
     const totalPrice = this.props.subTotalPrice - this.state.discount;
-    console.log('[CHECK!!!]', totalPrice);
+    console.log('[GoCheck!!]', totalPrice);
   }
 
   handleSelectCoupon = (coupon) => {
-    console.log(coupon);
-    const {cart} = this.props;
-    const cartWithCoupon = cart.filter(item => {
-      return item.availableCoupon !== false;
-    });
-    const discount = discountCalculator(cartWithCoupon, coupon);
-    this.setState({...this.state, discount});
+    this.props.onChange(coupon);
   }
 }
-
 
 class SelectCoupon extends React.Component {
   state = {
@@ -308,7 +306,6 @@ class SelectCoupon extends React.Component {
   render() {
     const {classes, coupons} = this.props;
     const {anchorEl, selectedIndex} = this.state;
-    console.log(coupons);
     return (
       <div className={classes.couponRoot}>
         <List component="nav" aria-label="Device settings">
@@ -347,22 +344,20 @@ class SelectCoupon extends React.Component {
   }
 
   handleClickListItem = (event) => {
-    console.log(event.currentTarget);
     this.setState({...this.state, anchorEl: event.currentTarget});
   };
 
   handleMenuItemClick = (event, index) => {
-    console.log(index);
     const {coupons} = this.props;
-    this.setState({...this.state, selectedIndex: index, anchorEl: null},
-      this.props.onChange(coupons[index]));
+    this.setState(
+      {...this.state, selectedIndex: index, anchorEl: null},
+      this.props.onChange(coupons[index])
+    );
   };
 
   handleClose = () => {
     this.setState({...this.state, anchorEl: null});
   };
 }
-
-
 
 export default withStyles(styles)(Cart);

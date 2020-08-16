@@ -44,12 +44,13 @@ class Products extends React.Component {
 
     const checkSelected = (id) => {
       const selected = cart.some(item => {
-        return item.id === id
+        return item.id === id;
       });
       return selected;
     }
 
-    if (!products || products.length === 0) return null
+    if (!products || products.length === 0) return null;
+
     return(
       <Paper className={classes.root} elevation={0}>
         <Title title="상품목록" />
@@ -90,7 +91,6 @@ class Products extends React.Component {
   }
 
   handleChangeCartItem = ({type, id}) => {
-    console.log('!!!',type, id);
     const {products} = this.state;
     let cart = [];
 
@@ -106,12 +106,11 @@ class Products extends React.Component {
   }
 
   handleClickMoreProducts = () => {
-    const pagination = this.state.pagination + 1
+    const pagination = this.state.pagination + 1;
     fetchData(`/products`, {method: 'GET', pagination})
       .then(response => {
-        console.log('[CLICK MORE BUTTON FETCH]', response);
         const products = [...this.state.products, ...response.products];
-        const pageEnd = pagination === response.meta.totalPage
+        const pageEnd = pagination === response.meta.totalPage;
         this.setState({...this.state, pagination, products, pageEnd});
       }).catch(error => window.alert(`[오류], ${error}`));
   }

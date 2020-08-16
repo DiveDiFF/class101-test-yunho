@@ -1,6 +1,7 @@
 import React from 'react';
 import {Tooltip} from '@material-ui/core';
 
+
 const MaterialIcon = ({icon, title = '', className, style = {}, onClick = () => {}}) => {
   return (
      <Tooltip title={title}>
