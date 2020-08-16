@@ -1,5 +1,5 @@
 import {productItems} from './datas/productItems';
-import {Coupons} from './datas/coupons';
+import {coupons} from './datas/coupons';
 
 const fetchData = async (path, option = {}) => {
   if (path === `/products`) {
@@ -37,8 +37,8 @@ const getCartData = () => {
 }
 
 const getCouponsData = () => {
-  console.log('[FUNC GET COUPONS]');
-  return {Coupons};
+  console.log('[FUNC GET COUPONS]', coupons);
+  return coupons;
 }
 
 export {fetchData}

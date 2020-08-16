@@ -1,4 +1,4 @@
-const coupons = [
+export const coupons = [
   {
     type: 'rate',
     title: '10% 할인 쿠폰',
